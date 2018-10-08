@@ -1,20 +1,25 @@
 package org.dean.test
 
+import android.content.Context
+import android.databinding.ViewDataBinding
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.annotation.GlideModule
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
-import org.dean.test.core.DownloadClient
-import org.dean.test.core.Message
-import org.dean.test.core.MessageService
-import org.dean.test.core.TextMessage
-import org.dean.test.databinding.RowBinding
+import org.dean.test.core.*
+import org.dean.test.databinding.RowImageBinding
+import org.dean.test.databinding.RowMessageBinding
+import com.bumptech.glide.module.AppGlideModule
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,28 +29,43 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<RecyclerView>(R.id.recycler_view).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = Adapter(MessageService(DownloadClient(OkHttpClient())).nextPage(1).toObservable())
+            adapter = Adapter(MessageService(DownloadClient(OkHttpClient())).nextPage(1).toObservable(), this@MainActivity)
         }
     }
 }
 
+@GlideModule
+class TestGlideModule : AppGlideModule()
 
 
-class Adapter(msgs: Observable<List<Message>>): RecyclerView.Adapter<Adapter.Companion.ViewHolder>() {
+class Adapter(msgs: Observable<List<Message>>, private val context: Context): RecyclerView.Adapter<Adapter.Companion.ViewHolder>() {
 
-    var msgsCache = emptyList<TextMessage>()
+    private var msgsCache = emptyList<Message>()
 
     init {
         msgs.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { list: List<Message> ->
-                    msgsCache = list.filterIsInstance(TextMessage::class.java)
+                    msgsCache = list
                     notifyDataSetChanged()
                 }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(RowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        val inflater = LayoutInflater.from(parent.context)
+        return ViewHolder(when (viewType) {
+            0 -> RowMessageBinding.inflate(inflater, parent, false)
+            1 -> RowImageBinding.inflate(inflater, parent, false)
+            else -> null
+        })
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return (when (msgsCache.get(position)) {
+            is TextMessage -> 0
+            is ImageMessage -> 1
+            else -> -1
+        })
     }
 
     override fun getItemCount(): Int {
@@ -53,11 +73,18 @@ class Adapter(msgs: Observable<List<Message>>): RecyclerView.Adapter<Adapter.Com
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.message = msgsCache[position]
+        when (holder.binding) {
+            is RowMessageBinding -> holder.binding.message = msgsCache[position] as TextMessage
+            is RowImageBinding   -> {
+                Glide.with(context)
+                        .load(Uri.parse((msgsCache[position] as ImageMessage).url))
+                        .into(holder.binding.root as ImageView)
+            }
+        }
     }
 
 
     companion object {
-        class ViewHolder(val binding: RowBinding): RecyclerView.ViewHolder(binding.root)
+        class ViewHolder(val binding: ViewDataBinding?): RecyclerView.ViewHolder(binding?.root)
     }
 }

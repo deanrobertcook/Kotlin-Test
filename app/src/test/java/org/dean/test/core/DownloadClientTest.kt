@@ -2,7 +2,6 @@ package org.dean.test.core
 
 import okhttp3.OkHttpClient
 import org.junit.Test
-import java.net.URL
 
 class DownloadClientTest {
 
@@ -22,7 +21,7 @@ class DownloadClientTest {
 
         val client = DownloadClient(okHttpClient)
 
-        val jpeg = client.downloadImage(URL("https://unsplash.com/photos/2SfRAWkinpU/download"))
+        val jpeg = client.downloadImage("https://unsplash.com/photos/2SfRAWkinpU/download")
 
         println("JPEG? has ${jpeg.size} bytes")
     }

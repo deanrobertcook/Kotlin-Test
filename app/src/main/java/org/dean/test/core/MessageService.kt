@@ -2,8 +2,6 @@ package org.dean.test.core
 
 import io.reactivex.Single
 import org.threeten.bp.Instant
-import java.net.MalformedURLException
-import java.net.URL
 import java.util.*
 
 class MessageService(private val client: DownloadClient) {
@@ -16,9 +14,9 @@ class MessageService(private val client: DownloadClient) {
                     val id = UUID.fromString(it.id)!!
                     val time = Instant.ofEpochMilli(it.time.toLong())!!
 
-                    try {
-                        ImageMessage(id, time, URL(it.text))
-                    } catch (_: MalformedURLException) {
+                    if (it.text.startsWith("https://")) {
+                        ImageMessage(id, time, it.text)
+                    } else {
                         TextMessage(id, time, it.text)
                     }
                 })
@@ -28,7 +26,7 @@ class MessageService(private val client: DownloadClient) {
         }
     }
 
-    fun downloadImage(url: URL): Single<ByteArray> {
+    fun downloadImage(url: String): Single<ByteArray> {
         return Single.create<ByteArray> { emitter ->
             try {
                 emitter.onSuccess(client.downloadImage(url))
@@ -50,4 +48,4 @@ data class TextMessage(override val id: UUID,
 
 data class ImageMessage(override val id: UUID,
                         override val time: Instant,
-                        val url: URL): Message
+                        val url: String): Message

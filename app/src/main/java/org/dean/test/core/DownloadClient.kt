@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
-import java.net.URL
 
 class DownloadClient(private val client: OkHttpClient) {
 
@@ -36,9 +35,9 @@ class DownloadClient(private val client: OkHttpClient) {
         } else emptyList()
     }
 
-    fun downloadImage(url: URL): ByteArray {
+    fun downloadImage(url: String): ByteArray {
         val request = Request.Builder()
-                .url(url.toString())
+                .url(url)
                 .build()
 
         val body = client
