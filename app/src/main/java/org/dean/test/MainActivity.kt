@@ -21,15 +21,35 @@ import org.dean.test.databinding.RowImageBinding
 import org.dean.test.databinding.RowMessageBinding
 import com.bumptech.glide.module.AppGlideModule
 
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         findViewById<RecyclerView>(R.id.recycler_view).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = Adapter(MessageService(DownloadClient(OkHttpClient())).nextPage(1).toObservable(), this@MainActivity)
+
+            var page = 0
+            val pageObservable = Observable.defer()create<Int> { emitter ->
+                emitter.onNext(page)
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+
+                        if (!recyclerView!!.canScrollVertically(1)) {
+                            page++
+                            emitter.onNext(page)
+                        }
+                    }
+                })
+            }
+
+            val msgs = MessageService(DownloadClient(OkHttpClient()))
+
+            adapter = Adapter(pageObservable.observeOn(Schedulers.io()).flatMap { msgs.nextPage(it).toObservable() }, this@MainActivity)
         }
     }
 }
@@ -46,7 +66,7 @@ class Adapter(msgs: Observable<List<Message>>, private val context: Context): Re
         msgs.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { list: List<Message> ->
-                    msgsCache = list
+                    msgsCache += list
                     notifyDataSetChanged()
                 }
     }
