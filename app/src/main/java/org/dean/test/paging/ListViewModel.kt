@@ -16,7 +16,6 @@ class ListViewModel: ViewModel() {
                     config = PagedList.Config.Builder()
                             .setPageSize(PagedKeyMessageDataSource.SERVER_PAGE_SIZE)
                             .setPrefetchDistance(PagedKeyMessageDataSource.SERVER_PAGE_SIZE * 3)
-                            .setEnablePlaceholders(true)
                             .build()
             )
 }

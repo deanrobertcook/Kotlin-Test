@@ -93,21 +93,21 @@ class Adapter(private val context: Context): PagedListAdapter<Message, Adapter.C
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val view = holder.view
+        val msg = getItem(position)
+
+        view.findViewById<TextView>(R.id.time).text = msg?.time?.toString() ?: ""
+
         when (getItemViewType(position)) {
-            0 -> {
-                val msg = getItem(position)
-                holder.view.findViewById<TextView>(R.id.id).text = msg?.id.toString()
-                holder.view.findViewById<TextView>(R.id.time).text = msg?.time.toString()
-                holder.view.findViewById<TextView>(R.id.message).text = (msg as TextMessage?)?.msg
-            }
+            0 -> view.findViewById<TextView>(R.id.message).text = (msg as TextMessage?)?.msg
             else -> {
-                val msg = getItem(position) as ImageMessage?
+                val imageView = view.findViewById<ImageView>(R.id.image)
                 if (msg == null) {
-                    (holder.view as ImageView).setImageBitmap(null)
+                    imageView.setImageBitmap(null)
                 } else {
                     Glide.with(context)
-                            .load(Uri.parse(msg.url))
-                            .into(holder.view as ImageView)
+                            .load(Uri.parse((msg as ImageMessage).url))
+                            .into(imageView)
                 }
             }
         }
