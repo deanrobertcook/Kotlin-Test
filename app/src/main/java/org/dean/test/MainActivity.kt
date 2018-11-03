@@ -3,22 +3,25 @@ package org.dean.test
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
-import org.dean.test.core.*
+import org.dean.test.core.ImageMessage
+import org.dean.test.core.Message
+import org.dean.test.core.TextMessage
+import org.dean.test.paging.ListViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,27 +30,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
+        val listAdapter = Adapter(this@MainActivity)
         findViewById<RecyclerView>(R.id.recycler_view).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = listAdapter
 
-            var page = 0
-            val pageObservable = Observable.create<Int> { emitter ->
-                emitter.onNext(page)
-                addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                        super.onScrollStateChanged(recyclerView, newState)
+            val viewModel = ViewModelProviders.of(this@MainActivity).get(ListViewModel::class.java)
+            viewModel.msgList.observe(this@MainActivity, Observer { t ->
+                t?.let { listAdapter.submitList(it) }
+            })
 
-                        if (!recyclerView!!.canScrollVertically(1)) {
-                            page++
-                            emitter.onNext(page)
-                        }
-                    }
-                })
-            }
-
-            val msgs = MessageService(DownloadClient(OkHttpClient()))
-
-            adapter = Adapter(pageObservable.observeOn(Schedulers.io()).flatMap { msgs.nextPage(it).toObservable() }, this@MainActivity)
         }
     }
 }
@@ -56,17 +48,33 @@ class MainActivity : AppCompatActivity() {
 class TestGlideModule : AppGlideModule()
 
 
-class Adapter(msgs: Observable<List<Message>>, private val context: Context): RecyclerView.Adapter<Adapter.Companion.ViewHolder>() {
+class Adapter(private val context: Context): PagedListAdapter<Message, Adapter.Companion.ViewHolder>(DIFF_CALLBACK) {
 
-    private var msgsCache = emptyList<Message>()
+    companion object {
 
-    init {
-        msgs.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { list: List<Message> ->
-                    msgsCache += list
-                    notifyDataSetChanged()
+        class ViewHolder(val view: View): RecyclerView.ViewHolder(view)
+
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Message>() {
+            override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+                return when (oldItem) {
+                    is TextMessage ->
+                        newItem is TextMessage &&
+                            oldItem.msg == newItem.msg &&
+                                oldItem.time == newItem.time
+
+                    is ImageMessage ->
+                        newItem is ImageMessage &&
+                                oldItem.time == newItem.time
+
+                    else -> false
                 }
+            }
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -78,34 +86,32 @@ class Adapter(msgs: Observable<List<Message>>, private val context: Context): Re
     }
 
     override fun getItemViewType(position: Int): Int {
-        return (when (msgsCache[position]) {
+        return (when (getItem(position)) {
             is TextMessage -> 0
             else           -> 1
         })
     }
 
-    override fun getItemCount(): Int {
-        return msgsCache.size
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             0 -> {
-                val msg = msgsCache[position]
-                holder.view.findViewById<TextView>(R.id.id).text = msg.id.toString()
-                holder.view.findViewById<TextView>(R.id.time).text = msg.time.toString()
-                holder.view.findViewById<TextView>(R.id.message).text = (msg as TextMessage).msg
+                val msg = getItem(position)
+                holder.view.findViewById<TextView>(R.id.id).text = msg?.id.toString()
+                holder.view.findViewById<TextView>(R.id.time).text = msg?.time.toString()
+                holder.view.findViewById<TextView>(R.id.message).text = (msg as TextMessage?)?.msg
             }
             else -> {
-                Glide.with(context)
-                        .load(Uri.parse((msgsCache[position] as ImageMessage).url))
-                        .into(holder.view as ImageView)
+                val msg = getItem(position) as ImageMessage?
+                if (msg == null) {
+                    (holder.view as ImageView).setImageBitmap(null)
+                } else {
+                    Glide.with(context)
+                            .load(Uri.parse(msg.url))
+                            .into(holder.view as ImageView)
+                }
             }
         }
     }
 
 
-    companion object {
-        class ViewHolder(val view: View): RecyclerView.ViewHolder(view)
-    }
 }

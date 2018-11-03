@@ -12,7 +12,7 @@ class DownloadClientTest {
 
         val client = DownloadClient(okHttpClient)
 
-        println(client.downloadNextPage(1))
+        println(client.downloadNextPage(9).size)
     }
 
     @Test
