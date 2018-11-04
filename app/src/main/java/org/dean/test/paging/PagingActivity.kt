@@ -1,6 +1,5 @@
-package org.dean.test
+package org.dean.test.paging
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,27 +15,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.module.AppGlideModule
-import org.dean.test.core.ImageMessage
-import org.dean.test.core.Message
-import org.dean.test.core.TextMessage
-import org.dean.test.paging.ListViewModel
+import org.dean.test.R
+import org.dean.test.paging.core.ImageMessage
+import org.dean.test.paging.core.Message
+import org.dean.test.paging.core.TextMessage
 
-class MainActivity : AppCompatActivity() {
+class PagingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_paging)
 
+        val listAdapter = Adapter()
 
-        val listAdapter = Adapter(this@MainActivity)
         findViewById<RecyclerView>(R.id.recycler_view).apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = LinearLayoutManager(this@PagingActivity)
             adapter = listAdapter
 
-            val viewModel = ViewModelProviders.of(this@MainActivity).get(ListViewModel::class.java)
-            viewModel.msgList.observe(this@MainActivity, Observer { t ->
+            val viewModel = ViewModelProviders.of(this@PagingActivity).get(ListViewModel::class.java)
+            viewModel.msgList.observe(this@PagingActivity, Observer { t ->
                 t?.let { listAdapter.submitList(it) }
             })
 
@@ -44,11 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-@GlideModule
-class TestGlideModule : AppGlideModule()
-
-
-class Adapter(private val context: Context): PagedListAdapter<Message, Adapter.Companion.ViewHolder>(DIFF_CALLBACK) {
+class Adapter : PagedListAdapter<Message, Adapter.Companion.ViewHolder>(DIFF_CALLBACK) {
 
     companion object {
 
@@ -80,7 +73,7 @@ class Adapter(private val context: Context): PagedListAdapter<Message, Adapter.C
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(when (viewType) {
-            0    -> inflater.inflate(R.layout.row_message, parent, false)
+            0 -> inflater.inflate(R.layout.row_message, parent, false)
             else -> inflater.inflate(R.layout.row_image, parent, false)
         })
     }
@@ -105,7 +98,7 @@ class Adapter(private val context: Context): PagedListAdapter<Message, Adapter.C
                 if (msg == null) {
                     imageView.setImageBitmap(null)
                 } else {
-                    Glide.with(context)
+                    Glide.with(view)
                             .load(Uri.parse((msg as ImageMessage).url))
                             .into(imageView)
                 }

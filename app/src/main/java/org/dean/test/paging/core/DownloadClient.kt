@@ -1,4 +1,4 @@
-package org.dean.test.core
+package org.dean.test.paging.core
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON

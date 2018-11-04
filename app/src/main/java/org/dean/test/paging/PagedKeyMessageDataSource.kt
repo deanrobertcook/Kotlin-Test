@@ -2,8 +2,8 @@ package org.dean.test.paging
 
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import org.dean.test.core.Message
-import org.dean.test.core.MessageService
+import org.dean.test.paging.core.Message
+import org.dean.test.paging.core.MessageService
 
 class PagedKeyMessageDataSource(private val msgService: MessageService): PageKeyedDataSource<Int, Message>() {
 

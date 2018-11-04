@@ -1,4 +1,4 @@
-package org.dean.test.core
+package org.dean.test.paging.core
 
 import okhttp3.OkHttpClient
 import org.junit.Test

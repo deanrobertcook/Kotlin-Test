@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import okhttp3.OkHttpClient
-import org.dean.test.core.DownloadClient
-import org.dean.test.core.MessageService
+import org.dean.test.paging.core.DownloadClient
+import org.dean.test.paging.core.MessageService
 
 class ListViewModel: ViewModel() {
 

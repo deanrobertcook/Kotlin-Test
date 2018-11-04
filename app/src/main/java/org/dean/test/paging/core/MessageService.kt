@@ -1,4 +1,4 @@
-package org.dean.test.core
+package org.dean.test.paging.core
 
 import io.reactivex.Single
 import org.threeten.bp.Instant
