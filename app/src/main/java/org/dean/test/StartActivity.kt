@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import org.dean.test.navigation.NavigationActivity
 import org.dean.test.paging.PagingActivity
 
 class StartActivity : AppCompatActivity() {
@@ -23,10 +24,15 @@ class StartActivity : AppCompatActivity() {
                         R.string.paging_example_description
                 ) { activity -> activity.startActivity(Intent(activity, PagingActivity::class.java)) },
 
+                CardInfo(R.string.navigation_example_level,
+                        R.string.navigation_example_title,
+                        R.string.navigation_example_description
+                ) { activity -> activity.startActivity(Intent(activity, NavigationActivity::class.java)) },
+
                 CardInfo(R.string.example_placeholder_level,
                         R.string.example_placeholder_title,
                         R.string.example_placeholder_description
-                ) { activity -> }
+                ) { }
         )
     }
 

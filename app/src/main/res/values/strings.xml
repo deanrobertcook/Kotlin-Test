@@ -2,8 +2,15 @@
     <string name="app_name">Test App</string>
 
     <string name="paging_example_level">level: easy</string>
-    <string name="paging_example_title">Paging: Network Only</string>
+    <string name="paging_example_title">Paging</string>
     <string name="paging_example_description">A demonstration of the Paging library that fetches predefined pages from a backend</string>
+
+    <string name="navigation_example_level">level: tough</string>
+    <string name="navigation_example_title">Navigation</string>
+    <string name="navigation_example_description">A demonstration of the Navigation library that mimics the UI from Wire.
+        You will first see a list of conversations, each of which can be deeplinked to, and each of which have a settings page
+        and potentially a list of participants.
+    </string>
 
     <string name="example_placeholder_level">level: ???</string>
     <string name="example_placeholder_title">More Examples Here!</string>

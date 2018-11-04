@@ -23,6 +23,8 @@
 
         <activity android:name="org.dean.test.paging.PagingActivity"/>
 
+        <activity android:name="org.dean.test.navigation.NavigationActivity"/>
+
 
     </application>
 
