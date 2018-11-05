@@ -22,8 +22,8 @@
         </activity>
 
         <activity android:name="org.dean.test.paging.PagingActivity"/>
-
         <activity android:name="org.dean.test.navigation.NavigationActivity"/>
+        <activity android:name="org.dean.test.bottomsheet.BottomSheetActivity"/>
 
 
     </application>

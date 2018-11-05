@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="56dp"
+                  android:orientation="horizontal"
+                  android:gravity="end"
+                  android:background="@color/colorPrimary">
+
+        <ImageView
+                android:background="@drawable/icon_info"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+        />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/information"
+        android:text="Some description!!"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+    />
+
+</merge>
