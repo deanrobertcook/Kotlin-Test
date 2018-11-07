@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import org.dean.test.bottomsheet.BottomSheetActivity
 import org.dean.test.navigation.NavigationActivity
 import org.dean.test.paging.PagingActivity
+import org.dean.test.sensors.SensorActivity
 
 class StartActivity : AppCompatActivity() {
 
@@ -34,6 +35,11 @@ class StartActivity : AppCompatActivity() {
                         R.string.bottom_sheet_example_title,
                         R.string.bottom_sheet_example_description
                 ) { activity -> activity.startActivity(Intent(activity, BottomSheetActivity::class.java)) },
+
+                CardInfo(R.string.sensor_example_level,
+                        R.string.sensor_sheet_example_title,
+                        R.string.sensor_sheet_example_description
+                ) { activity -> activity.startActivity(Intent(activity, SensorActivity::class.java)) },
 
                 CardInfo(R.string.example_placeholder_level,
                         R.string.example_placeholder_title,

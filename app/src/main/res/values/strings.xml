@@ -3,7 +3,7 @@
 
     <string name="paging_example_level">level: easy</string>
     <string name="paging_example_title">Paging</string>
-    <string name="paging_example_description">A demonstration of the Paging library that fetches predefined pages from a backend</string>
+    <string name="paging_example_description">A demonstration of the Paging library that fetches predefined pages from a backend.</string>
 
     <string name="navigation_example_level">level: tough</string>
     <string name="navigation_example_title">Navigation</string>
@@ -16,7 +16,8 @@
 
     <string name="bottom_sheet_example_level">level: bug…</string>
     <string name="bottom_sheet_example_title">Bottom Sheet</string>
-    <string name="bottom_sheet_example_description">The new Material Design BottomSheetBehaviour seems to be misbehaving</string>
+    <string name="bottom_sheet_example_description">The new Material Design BottomSheetBehaviour seems to be misbehaving.</string>
+
     <string name="sensor_example_level">level: easy</string>
     <string name="sensor_sheet_example_title">Sensors</string>
     <string name="sensor_sheet_example_description">Refreshing my understanding of Android sensors.</string>
