@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/conversationListFragment">
+
+    <fragment android:id="@+id/conversationListFragment"
+              android:name="org.dean.test.navigation.ConversationListFragment"
+              android:label="fragment_conversation_list"
+              tools:layout="@layout/fragment_conversation_list">
+
+        <action android:id="@+id/action_conv_clicked"
+                app:destination="@id/conversationFragment" app:enterAnim="@anim/enter_from_right"
+                app:exitAnim="@anim/exit_to_left"
+                app:popEnterAnim="@anim/enter_from_left" app:popExitAnim="@anim/exit_to_right"/>
+    </fragment>
+
+    <fragment android:id="@+id/conversationFragment"
+              android:name="org.dean.test.navigation.ConversationFragment"
+              android:label="fragment_conversation"
+              tools:layout="@layout/fragment_conversation">
+        <argument android:name="conv_name" app:argType="string" android:defaultValue='""'/>
+    </fragment>
+
+
+</navigation>

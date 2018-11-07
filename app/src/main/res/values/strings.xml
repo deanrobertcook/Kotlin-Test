@@ -7,16 +7,24 @@
 
     <string name="navigation_example_level">level: tough</string>
     <string name="navigation_example_title">Navigation</string>
-    <string name="navigation_example_description">A demonstration of the Navigation library that mimics the UI from Wire.
-        You will first see a list of conversations, each of which can be deeplinked to, and each of which have a settings page
+    <string name="navigation_example_description">A demonstration of the Navigation library that mimics the UI from
+        Wire.
+        You will first see a list of conversations, each of which can be deeplinked to, and each of which have a
+        settings page
         and potentially a list of participants.
     </string>
 
     <string name="bottom_sheet_example_level">level: bug…</string>
     <string name="bottom_sheet_example_title">Bottom Sheet</string>
     <string name="bottom_sheet_example_description">The new Material Design BottomSheetBehaviour seems to be misbehaving</string>
+    <string name="sensor_example_level">level: easy</string>
+    <string name="sensor_sheet_example_title">Sensors</string>
+    <string name="sensor_sheet_example_description">Refreshing my understanding of Android sensors.</string>
 
     <string name="example_placeholder_level">level: ???</string>
     <string name="example_placeholder_title">More Examples Here!</string>
     <string name="example_placeholder_description">The future starts now!</string>
+    
+    <string name="orientation_button">Press to calculate orientation: %1$d</string>
+
 </resources>
