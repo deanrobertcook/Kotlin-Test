@@ -25,7 +25,6 @@
     <string name="example_placeholder_level">level: ???</string>
     <string name="example_placeholder_title">More Examples Here!</string>
     <string name="example_placeholder_description">The future starts now!</string>
-    
-    <string name="orientation_button">Press to calculate orientation: %1$d</string>
 
+    <string name="orientation_button">Press to calculate orientation: %1$d</string>
 </resources>

@@ -16,29 +16,34 @@ import org.dean.test.R
 class SensorActivity: AppCompatActivity(), SensorEventListener {
 
     private var lastShakeTime = 0L
-    private lateinit var textView: TextView
+    private lateinit var shakeLabel: TextView
+    private lateinit var orientationButton: TextView
+
     private lateinit var sensorManager: SensorManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sensor)
 
-        textView = findViewById(R.id.text)
+        shakeLabel = findViewById(R.id.shake)
+        orientationButton = findViewById(R.id.orientation)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
     override fun onResume() {
         super.onResume()
 
-        val registered = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
         }
 
-        if (registered != true) {
-            Log.v("TAG", "No accelerometer available")
-        }
-
     }
+
+//    private fun setOrientation() {
+//        orientationButton.text = {
+//            SensorManager.getOrientation()
+//        }
+//    }
 
     override fun onPause() {
         sensorManager.unregisterListener(this)
@@ -67,7 +72,7 @@ class SensorActivity: AppCompatActivity(), SensorEventListener {
 
                 if (acceleration > SHAKE_THRESHOLD) {
                     lastShakeTime = curTime
-                    textView.visibility = if (textView.visibility == View.GONE) View.VISIBLE else View.GONE
+                    shakeLabel.visibility = if (shakeLabel.visibility == View.GONE) View.VISIBLE else View.GONE
                 }
             }
         }
