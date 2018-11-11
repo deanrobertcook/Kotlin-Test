@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,16 +16,23 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import org.dean.test.R
+import org.dean.test.navigation.model.Conversation
+import org.dean.test.navigation.repo.ConversationRepository
 import java.util.*
+import javax.inject.Inject
 
 class ConversationListFragment : Fragment() {
+
+    @Inject
+    lateinit var convRepo: ConversationRepository
 
     private var adapter: ConversationListAdapter? = null
     private var clickSubscription: Disposable? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        adapter = ConversationListAdapter(ViewModelProviders.of(this@ConversationListFragment).get(ConversationListViewModel::class.java).conversations)
+        (context as NavigationActivity).component.inject(this)
+        adapter = ConversationListAdapter(convRepo.getConversations().toObservable())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,7 +49,7 @@ class ConversationListFragment : Fragment() {
         adapter?.wire()
         clickSubscription = adapter?.onConvClicked?.forEach { conv ->
             val action = ConversationListFragmentDirections.actionConvClicked()
-            action.setConvName(conv.name)
+            action.setConvId(conv.id.toString())
             NavHostFragment.findNavController(this).navigate(action)
         }
     }
@@ -62,7 +68,7 @@ class ConversationListFragment : Fragment() {
 
 }
 
-class ConversationListAdapter(private val conversations: Observable<List<Conversation>>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ConversationListAdapter(private val conversations: Observable<Set<Conversation>>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val clickSubject = PublishSubject.create<Conversation>()
     val onConvClicked: Observable<Conversation> = clickSubject
@@ -75,7 +81,7 @@ class ConversationListAdapter(private val conversations: Observable<List<Convers
         convsSubscription = conversations
                 .observeOn(AndroidSchedulers.mainThread())
                 .forEach { cs ->
-                    convsCache = cs
+                    convsCache = cs.toList().sortedBy { c -> c.name }
                     notifyDataSetChanged()
                 }
     }
@@ -98,8 +104,6 @@ class ConversationListAdapter(private val conversations: Observable<List<Convers
         holder.itemView.findViewById<TextView>(R.id.name).text = conv.name
         holder.itemView.setOnClickListener { _ -> clickSubject.onNext(conv) }
     }
-
-
 }
 
 class ConversationListViewModel: ViewModel() {
@@ -111,7 +115,3 @@ class ConversationListViewModel: ViewModel() {
     }
 
 }
-
-data class Conversation(val id: UUID,
-                        val name: String,
-                        val isGroup: Boolean)

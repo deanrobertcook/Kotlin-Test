@@ -36,7 +36,7 @@ class BottomSheetActivity: AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        findViewById<View>(R.id.invalidate).setOnClickListener { v ->
+        findViewById<View>(R.id.invalidate).setOnClickListener {
             adapter.notifyDataSetChanged()
         }
 

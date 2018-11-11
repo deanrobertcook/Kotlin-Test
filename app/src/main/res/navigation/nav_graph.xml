@@ -20,7 +20,7 @@
               android:name="org.dean.test.navigation.ConversationFragment"
               android:label="fragment_conversation"
               tools:layout="@layout/fragment_conversation">
-        <argument android:name="conv_name" app:argType="string" android:defaultValue='""'/>
+        <argument android:name="conv_id" app:argType="string" android:defaultValue='""'/>
     </fragment>
 
 

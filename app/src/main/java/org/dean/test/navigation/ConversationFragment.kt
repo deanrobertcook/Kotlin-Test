@@ -8,24 +8,26 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import org.dean.test.R
+import org.dean.test.navigation.model.Conversation
+import org.dean.test.navigation.repo.ConversationRepository
 import java.util.*
+import javax.inject.Inject
 
 class ConversationFragment : Fragment() {
 
-    private var convViewModel: ConversationViewModel? = null
+    @Inject
+    lateinit var convRepo: ConversationRepository
+
     private var convSubscription: Disposable? = null
     private var convNameView: TextView? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        convViewModel = ViewModelProviders
-                .of(this@ConversationFragment)
-                .get(ConversationViewModel::class.java)
+        (context as NavigationActivity).component.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,24 +38,15 @@ class ConversationFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        convSubscription = convViewModel
-                ?.conversation
-                ?.forEach { conv ->
-                    convNameView?.text = conv.name
-                }
-
-        convViewModel?.setConvName(ConversationFragmentArgs.fromBundle(arguments).convName)
+        val convId = UUID.fromString(ConversationFragmentArgs.fromBundle(arguments).convId)
+        convSubscription = convRepo.getConversation(convId).subscribe { conv ->
+            convNameView?.text = conv.name
+        }
     }
 
     override fun onPause() {
         super.onPause()
         convSubscription?.dispose()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        convViewModel = null
-        convSubscription = null
     }
 }
 
